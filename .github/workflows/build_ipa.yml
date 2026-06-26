@@ -15,6 +15,12 @@ jobs:
         with:
           node-version: 20
 
+      # ★ 修正1: Xcodeのビルドフェーズ（ReactCodegen等）がNode/NPMを確実に見つけられるよう、標準パスにリンクを作成
+      - name: Symlink Node and NPM for Xcode
+        run: |
+          sudo ln -s $(which node) /usr/local/bin/node
+          sudo ln -s $(which npm) /usr/local/bin/npm
+
       - name: Setup Expo
         uses: expo/expo-github-action@v8
         with:
@@ -33,7 +39,7 @@ jobs:
       - name: Build Unsigned IPA with Xcode
         run: echo "Began to build Unsigned IPA with Xcode"
 
-      # ★ 修正: 取得したプロジェクト名を $GITHUB_ENV に書き出し、ジョブ全体で共有
+      # 取得したプロジェクト名を $GITHUB_ENV に書き出し、ジョブ全体で共有
       - name: Get Workspace Name
         run: |
           PROJECT_NAME=$(ls ios | grep .xcworkspace | sed 's/\.xcworkspace//')
