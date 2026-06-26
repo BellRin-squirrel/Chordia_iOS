@@ -24,6 +24,9 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Give permission to prebuild
+        run: chmod +x ./node_modules/.bin/expo
+
       - name: Prebuild (Convert to Native Project)
         run: ./node_modules/.bin/expo prebuild --platform ios
 
