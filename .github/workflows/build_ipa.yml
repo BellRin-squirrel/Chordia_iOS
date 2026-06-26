@@ -15,12 +15,6 @@ jobs:
         with:
           node-version: 20
 
-      # XcodeのビルドフェーズがNode/NPMを確実に見つけられるよう、標準パスにリンクを作成
-      - name: Symlink Node and NPM for Xcode
-        run: |
-          sudo ln -s $(which node) /usr/local/bin/node
-          sudo ln -s $(which npm) /usr/local/bin/npm
-
       - name: Setup Expo
         uses: expo/expo-github-action@v8
         with:
@@ -36,6 +30,16 @@ jobs:
       - name: Prebuild (Convert to Native Project)
         run: ./node_modules/.bin/expo prebuild --platform ios
 
+      # ★ 修正: シンボリックリンクの競合を避け、.xcode.env.local に正しいNodeパスを書き出す
+      - name: Configure Node for Xcode Build
+        run: |
+          echo "export NODE_BINARY=$(which node)" > ios/.xcode.env.local
+          if [ -d "node_modules/react-native/scripts" ]; then
+            echo "export NODE_BINARY=$(which node)" > node_modules/react-native/scripts/.xcode.env.local
+          fi
+          echo "Configured local xcode env with node path:"
+          cat ios/.xcode.env.local
+
       - name: Build Unsigned IPA with Xcode
         run: echo "Began to build Unsigned IPA with Xcode"
 
@@ -46,7 +50,7 @@ jobs:
           echo "Found project: $PROJECT_NAME"
           echo "PROJECT_NAME=$PROJECT_NAME" >> $GITHUB_ENV
 
-      # ★ 修正: xcpretty を通してログを劇的に圧縮し、エラーのみを目立たせます
+      # xcpretty を通してログを劇的に圧縮し、エラーのみを目立たせます
       - name: Make archive as for iPhones. (Unsigned)
         run: |
           # パイプ（|）の途中でエラーが起きても、正しくGitHub Actionsに失敗を伝えるための設定
