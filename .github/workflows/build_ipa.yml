@@ -15,7 +15,7 @@ jobs:
         with:
           node-version: 20
 
-      # ★ 修正1: Xcodeのビルドフェーズ（ReactCodegen等）がNode/NPMを確実に見つけられるよう、標準パスにリンクを作成
+      # XcodeのビルドフェーズがNode/NPMを確実に見つけられるよう、標準パスにリンクを作成
       - name: Symlink Node and NPM for Xcode
         run: |
           sudo ln -s $(which node) /usr/local/bin/node
@@ -46,9 +46,12 @@ jobs:
           echo "Found project: $PROJECT_NAME"
           echo "PROJECT_NAME=$PROJECT_NAME" >> $GITHUB_ENV
 
+      # ★ 修正: xcpretty を通してログを劇的に圧縮し、エラーのみを目立たせます
       - name: Make archive as for iPhones. (Unsigned)
         run: |
-          # 実機用(iphoneos)としてアーカイブ作成（署名なし）
+          # パイプ（|）の途中でエラーが起きても、正しくGitHub Actionsに失敗を伝えるための設定
+          set -o pipefail
+          
           xcodebuild -workspace "./ios/$PROJECT_NAME.xcworkspace" \
             -scheme "$PROJECT_NAME" \
             -configuration Release \
@@ -57,7 +60,7 @@ jobs:
             archive \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGN_IDENTITY=""
+            CODE_SIGN_IDENTITY="" | xcpretty
 
       - name: Make Payload Folder and Make It IPA file
         run: |
