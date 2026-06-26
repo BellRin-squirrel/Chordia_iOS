@@ -32,11 +32,14 @@ jobs:
 
       - name: Build Unsigned IPA with Xcode
         run: echo "Began to build Unsigned IPA with Xcode"
+
+      # ★ 修正: 取得したプロジェクト名を $GITHUB_ENV に書き出し、ジョブ全体で共有
       - name: Get Workspace Name
         run: |
-          # ワークスペース名を取得
           PROJECT_NAME=$(ls ios | grep .xcworkspace | sed 's/\.xcworkspace//')
           echo "Found project: $PROJECT_NAME"
+          echo "PROJECT_NAME=$PROJECT_NAME" >> $GITHUB_ENV
+
       - name: Make archive as for iPhones. (Unsigned)
         run: |
           # 実機用(iphoneos)としてアーカイブ作成（署名なし）
@@ -49,6 +52,7 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGN_IDENTITY=""
+
       - name: Make Payload Folder and Make It IPA file
         run: |
           # Payloadフォルダを作ってIPA化
