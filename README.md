@@ -1,3 +1,6 @@
+# 注意
+このリポジトリはアーカイブされました。新しいリポジトリは[こちら](https://github.com/BellRin-squirrel/Chordia)です。
+
 # Chordia_iOS_ipa
 ここに記載されている説明はv4.0.0-beta1についてです。もし、このバージョンがChordia_iOS_ipaの最新版でない場合は、READMEの変更があるまでお待ちください。当READMEの一部内容は現在執筆中です。更新があるまでもうしばらくお待ちください。
 
